@@ -211,7 +211,7 @@ export const createProduct = async (req, res) => {
     const product = await prisma.product.create({
       data: {
         name,
-        slug,
+        slug: slug || name.toLowerCase().replace(/\s+/g, '-'),
         description,
         price: parseFloat(price),
         discount: parseFloat(discount),

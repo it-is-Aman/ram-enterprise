@@ -58,11 +58,19 @@ export const getProductReviews = async (req, res) => {
 // Get all reviews (Admin)
 export const getAllReviews = async (req, res) => {
   try {
-    const { page = 1, limit = 10, rating } = req.query;
+    const { page = 1, limit = 10, rating, isVerified, search } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     const where = {
-      ...(rating && { rating: parseInt(rating) })
+      ...(rating && { rating: parseInt(rating) }),
+      ...(isVerified !== undefined && { isVerified: isVerified === 'true' }),
+      ...(search && {
+        OR: [
+          { comment: { contains: search, mode: 'insensitive' } },
+          { user: { name: { contains: search, mode: 'insensitive' } } },
+          { product: { name: { contains: search, mode: 'insensitive' } } }
+        ]
+      })
     };
 
     const [reviews, totalCount] = await Promise.all([
@@ -80,7 +88,8 @@ export const getAllReviews = async (req, res) => {
             select: {
               id: true,
               name: true,
-              slug: true
+              slug: true,
+              images: true
             }
           }
         },
@@ -281,6 +290,91 @@ export const getReviewStats = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch review statistics'
+    });
+  }
+};
+
+// Get single review by ID
+export const getReviewById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const review = await prisma.review.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        product: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            images: true
+          }
+        }
+      }
+    });
+
+    if (!review) {
+      return res.status(404).json({
+        success: false,
+        message: 'Review not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: review
+    });
+  } catch (error) {
+    console.error('Error fetching review:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch review'
+    });
+  }
+};
+
+// Update review verification status
+export const updateReviewVerification = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isVerified } = req.body;
+
+    const review = await prisma.review.update({
+      where: { id: parseInt(id) },
+      data: { isVerified: Boolean(isVerified) },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        product: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
+    });
+
+    res.json({
+      success: true,
+      data: review,
+      message: `Review ${isVerified ? 'verified' : 'unverified'} successfully`
+    });
+  } catch (error) {
+    console.error('Error updating review verification:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update review verification'
     });
   }
 };
