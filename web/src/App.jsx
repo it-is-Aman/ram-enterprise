@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
 
 // Admin Components
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -26,46 +28,77 @@ import OrderSuccessPage from "./pages/user/OrderSuccessPage";
 import ContactPage from "./pages/user/ContactPage";
 import Maindashboard from "./pages/Maindashboard";
 import { CompanyInfo } from "./components/user";
+import AuthModal from "./components/AuthModal";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* User-Facing Routes */}
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* User-Facing Routes */}
 
-        <Route path="/" element={<Maindashboard />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/aboutus" element={<CompanyInfo />} />
-          <Route path="/product/:id" element={<ProductDetailPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/order-success" element={<OrderSuccessPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-        </Route>
+          <Route path="/" element={<Maindashboard />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/aboutus" element={<CompanyInfo />} />
+            <Route path="/product/:id" element={<ProductDetailPage />} />
+            <Route 
+              path="/cart" 
+              element={
+                <ProtectedRoute>
+                  <CartPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/checkout" 
+              element={
+                <ProtectedRoute>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/order-success" 
+              element={
+                <ProtectedRoute>
+                  <OrderSuccessPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/contact" element={<ContactPage />} />
+          </Route>
 
-        {/* Admin Pages */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="products" element={<AdminProductsPage />} />
-          <Route path="products/add" element={<AddProductPage />} />
-          <Route path="products/:id" element={<AdminProductDetailsPage />} />
-          <Route path="products/:id/edit" element={<EditProductPage />} />
-          <Route path="orders" element={<OrdersPage />} />
-          <Route path="orders/:id" element={<OrderDetailsPage />} />
-          <Route path="customers" element={<CustomersPage />} />
-          <Route path="customers/:id" element={<CustomerDetailsPage />} />
-          <Route path="inquiries" element={<InquiriesPage />} />
-          <Route path="inquiries/:id" element={<InquiryDetailsPage />} />
-          <Route path="reviews" element={<ReviewsPage />} />
-          <Route path="reviews/:id" element={<ReviewDetailsPage />} />
-        </Route>
+          {/* Admin Pages - Protected by AdminRoute */}
+          <Route 
+            path="/admin" 
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="products" element={<AdminProductsPage />} />
+            <Route path="products/add" element={<AddProductPage />} />
+            <Route path="products/:id" element={<AdminProductDetailsPage />} />
+            <Route path="products/:id/edit" element={<EditProductPage />} />
+            <Route path="orders" element={<OrdersPage />} />
+            <Route path="orders/:id" element={<OrderDetailsPage />} />
+            <Route path="customers" element={<CustomersPage />} />
+            <Route path="customers/:id" element={<CustomerDetailsPage />} />
+            <Route path="inquiries" element={<InquiriesPage />} />
+            <Route path="inquiries/:id" element={<InquiryDetailsPage />} />
+            <Route path="reviews" element={<ReviewsPage />} />
+            <Route path="reviews/:id" element={<ReviewDetailsPage />} />
+          </Route>
 
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Catch all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

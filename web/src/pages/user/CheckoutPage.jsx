@@ -7,10 +7,12 @@ import {
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import { cartAPI, ordersAPI, productsAPI } from "../../services";
+import { useAuth } from "../../contexts/AuthContext";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
 
   const [cart, setCart] = useState(null);
   const [singleProduct, setSingleProduct] = useState(null);
@@ -22,14 +24,13 @@ const CheckoutPage = () => {
   const checkoutMode = productId ? "single" : "cart";
 
   const [shippingInfo, setShippingInfo] = useState({
-    address: "",
+    address: user?.address || "",
     city: "",
     state: "",
     pincode: "",
-    phone: "",
+    phone: user?.phone || "",
   });
   const [errors, setErrors] = useState({});
-  const userId = 59;
 
   useEffect(() => {
     if (checkoutMode === "cart") {
@@ -42,7 +43,7 @@ const CheckoutPage = () => {
   const fetchCart = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await cartAPI.get(userId);
+      const response = await cartAPI.get(user.id);
       if (!response.data?.items || response.data.items.length === 0) {
         navigate("/cart");
         return;
@@ -54,7 +55,7 @@ const CheckoutPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [userId, navigate]);
+  }, [user, navigate]);
 
   const fetchSingleProduct = useCallback(async () => {
     try {
@@ -150,7 +151,7 @@ const CheckoutPage = () => {
       const orderItems = getOrderItems();
 
       const orderData = {
-        userId,
+        userId: user.id,
         totalAmount,
         shippingAddress: shippingInfo.address,
         shippingCity: shippingInfo.city,
@@ -181,7 +182,7 @@ const CheckoutPage = () => {
             };
 
             await ordersAPI.create(finalOrderData);
-            if (checkoutMode === "cart") await cartAPI.clear(userId);
+            if (checkoutMode === "cart") await cartAPI.clear(user.id);
 
             navigate(`/order-success?paymentId=${response.razorpay_payment_id}`);
           } catch (error) {
@@ -194,7 +195,6 @@ const CheckoutPage = () => {
           email: "customer@example.com",
           contact: shippingInfo.phone,
         },
-        notes: { address: shippingInfo.address, city: shippingInfo.city },
         theme: { color: "#e43d12" },
         modal: {
           ondismiss: function () {

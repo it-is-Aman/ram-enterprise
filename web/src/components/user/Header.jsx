@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut, ShoppingCart, UserCircle } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import AuthModal from "../AuthModal";
 
 const Header = () => {
+  const { user, logout, isAdmin } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,8 +24,19 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleLogout = () => {
+    logout();
+    setUserMenuOpen(false);
+  };
+
   return (
-    <motion.header
+    <>
+      <AuthModal 
+        isOpen={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+      />
+      
+      <motion.header
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
@@ -75,19 +91,59 @@ const Header = () => {
             <motion.div whileHover={{ scale: 1.05 }}>
               <Link
                 to="/cart"
-                className={`text-${scrolled ? "#ebe9e1" : "#e43d12"} hover:text-[#f4a261] transition-all duration-300 font-semibold font-gt-america-cn-md`}
+                className={`flex items-center gap-2 ${scrolled ? "text-[#ebe9e1]" : "text-[#e43d12]"} hover:text-[#f4a261] transition-all duration-300 font-semibold font-gt-america-cn-md`}
               >
+                <ShoppingCart size={20} />
                 Cart
               </Link>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }}>
-              <Link
-                to="/admin"
-                className={`bg-${scrolled ? "#ebe9e1" : "#f4a261"} text-${scrolled ? "#e43d12" : "#476EAE"} px-4 py-2 rounded-full shadow-md hover:bg-white transition-all duration-300 font-semibold font-gt-america-cn-md`}
+
+            {user ? (
+              <div className="relative">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className={`flex items-center gap-2 ${scrolled ? "text-[#ebe9e1]" : "text-[#e43d12]"} hover:text-[#f4a261] transition-all duration-300 font-semibold font-gt-america-cn-md`}
+                >
+                  <UserCircle size={24} />
+                  {user.name}
+                </motion.button>
+
+                {userMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50"
+                  >
+                    {isAdmin() && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition"
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 transition flex items-center gap-2"
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
+              </div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                onClick={() => setAuthModalOpen(true)}
+                className={`flex items-center gap-2 ${scrolled ? "bg-[#ebe9e1] text-[#e43d12]" : "bg-[#f4a261] text-[#476EAE]"} px-4 py-2 rounded-full shadow-md hover:bg-white transition-all duration-300 font-semibold font-gt-america-cn-md`}
               >
-                Admin
-              </Link>
-            </motion.div>
+                <User size={18} />
+                Login
+              </motion.button>
+            )}
           </div>
 
           {/* ===== Mobile Menu Button ===== */}
@@ -123,22 +179,52 @@ const Header = () => {
               <Link
                 to="/cart"
                 onClick={() => setMenuOpen(false)}
-                className="hover:text-[#f4a261] font-medium font-gt-america-cn-md"
+                className="hover:text-[#f4a261] font-medium font-gt-america-cn-md flex items-center gap-2"
               >
+                <ShoppingCart size={18} />
                 Cart
               </Link>
-              <Link
-                to="/admin"
-                onClick={() => setMenuOpen(false)}
-                className="bg-[#f4a261] text-[#e43d12] text-center py-2 rounded-full font-semibold hover:bg-white font-gt-america-cn-md"
-              >
-                Admin
-              </Link>
+              
+              {user ? (
+                <>
+                  {isAdmin() && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setMenuOpen(false)}
+                      className="hover:text-[#f4a261] font-medium font-gt-america-cn-md"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setMenuOpen(false);
+                    }}
+                    className="text-left hover:text-[#f4a261] font-medium font-gt-america-cn-md flex items-center gap-2"
+                  >
+                    <LogOut size={18} />
+                    Logout ({user.name})
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    setAuthModalOpen(true);
+                    setMenuOpen(false);
+                  }}
+                  className="bg-[#f4a261] text-[#e43d12] text-center py-2 rounded-full font-semibold hover:bg-white font-gt-america-cn-md flex items-center justify-center gap-2"
+                >
+                  <User size={18} />
+                  Login
+                </button>
+              )}
             </motion.div>
           )}
         </div>
       </div>
     </motion.header>
+    </>
   );
 };
 

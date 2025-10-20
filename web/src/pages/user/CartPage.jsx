@@ -9,23 +9,29 @@ import {
 } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
 import { cartAPI } from "../../services";
+import { useAuth } from "../../contexts/AuthContext";
 
 const CartPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState({});
 
-  const userId = 59; // Demo: replace with logged-in user ID
+
+
 
   useEffect(() => {
-    fetchCart();
-  }, []);
+    if (user) {
+      fetchCart();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]); const fetchCart = async () => {
+    if (!user) return;
 
-  const fetchCart = async () => {
     try {
       setLoading(true);
-      const response = await cartAPI.get(userId);
+      const response = await cartAPI.get(user.id);
       setCart(response.data);
     } catch (error) {
       console.error("Error fetching cart:", error);
@@ -36,10 +42,10 @@ const CartPage = () => {
   };
 
   const updateQuantity = async (itemId, newQuantity) => {
-    if (newQuantity < 1) return;
+    if (newQuantity < 1 || !user) return;
     try {
       setUpdating((prev) => ({ ...prev, [itemId]: true }));
-      await cartAPI.updateItem(userId, itemId, newQuantity);
+      await cartAPI.updateItem(user.id, itemId, newQuantity);
       fetchCart();
     } catch (error) {
       console.error("Error updating quantity:", error);
@@ -50,9 +56,10 @@ const CartPage = () => {
   };
 
   const removeItem = async (itemId) => {
+    if (!user) return;
     if (window.confirm("Remove this item from cart?")) {
       try {
-        await cartAPI.removeItem(userId, itemId);
+        await cartAPI.removeItem(user.id, itemId);
         fetchCart();
       } catch (error) {
         console.error("Error removing item:", error);
@@ -62,9 +69,10 @@ const CartPage = () => {
   };
 
   const clearCart = async () => {
+    if (!user) return;
     if (window.confirm("Clear all items from cart?")) {
       try {
-        await cartAPI.clear(userId);
+        await cartAPI.clear(user.id);
         fetchCart();
       } catch (error) {
         console.error("Error clearing cart:", error);
@@ -101,7 +109,7 @@ const CartPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#ebe9e1" }}>
-     
+
 
       {/* Cart Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

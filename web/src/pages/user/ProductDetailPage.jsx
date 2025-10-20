@@ -14,10 +14,13 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid, HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import { productsAPI, reviewsAPI, cartAPI, wishlistAPI } from '../../services';
+import { useAuth } from '../../contexts/AuthContext';
+import AuthModal from '../../components/AuthModal';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -27,6 +30,7 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   // Fetch product details
   useEffect(() => {
@@ -64,10 +68,15 @@ const ProductDetailPage = () => {
   }, [id]);
 
   const handleAddToCart = async () => {
+    // Check if user is logged in
+    if (!user) {
+      setAuthModalOpen(true);
+      return;
+    }
+
     try {
       setAddingToCart(true);
-      const userId=59;
-      await cartAPI.addItem(userId, product.id, quantity);
+      await cartAPI.addItem(user.id, product.id, quantity);
       alert('Product added to cart successfully!');
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -78,16 +87,28 @@ const ProductDetailPage = () => {
   };
 
   const handleBuyNow = () => {
+    // Check if user is logged in
+    if (!user) {
+      setAuthModalOpen(true);
+      return;
+    }
+    
     navigate(`/checkout?productId=${product.id}&quantity=${quantity}`);
   };
 
   const handleWishlistToggle = async () => {
+    // Check if user is logged in
+    if (!user) {
+      setAuthModalOpen(true);
+      return;
+    }
+
     try {
       if (isWishlisted) {
-        await wishlistAPI.removeItem(1, product.id);
+        await wishlistAPI.removeItem(user.id, product.id);
         setIsWishlisted(false);
       } else {
-        await wishlistAPI.addItem(1, product.id);
+        await wishlistAPI.addItem(user.id, product.id);
         setIsWishlisted(true);
       }
     } catch (error) {
@@ -149,7 +170,13 @@ const ProductDetailPage = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-[#F6FF99]">
+    <>
+      <AuthModal 
+        isOpen={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+      />
+      
+      <div className="min-h-screen bg-[#F6FF99]">
      
 
       {/* Product Details */}
@@ -421,6 +448,7 @@ const ProductDetailPage = () => {
         )}
       </main>
     </div>
+    </>
   );
 };
 
