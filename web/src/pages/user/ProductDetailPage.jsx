@@ -66,8 +66,8 @@ const ProductDetailPage = () => {
   const handleAddToCart = async () => {
     try {
       setAddingToCart(true);
-      // For now, we'll use userId = 1 (in real app, get from auth context)
-      await cartAPI.addItem(1, product.id, quantity);
+      const userId=59;
+      await cartAPI.addItem(userId, product.id, quantity);
       alert('Product added to cart successfully!');
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -78,7 +78,6 @@ const ProductDetailPage = () => {
   };
 
   const handleBuyNow = () => {
-    // Redirect to checkout with this product
     navigate(`/checkout?productId=${product.id}&quantity=${quantity}`);
   };
 
@@ -119,21 +118,21 @@ const ProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-600"></div>
+      <div className="min-h-screen bg-[#F6FF99] flex items-center justify-center animate-pulse">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#476EAE] border-gray-200"></div>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F6FF99] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Product Not Found</h2>
-          <p className="text-gray-600 mt-2">The product you're looking for doesn't exist.</p>
+          <h2 className="text-2xl font-bold text-[#476EAE]">Product Not Found</h2>
+          <p className="text-gray-700 mt-2">The product you're looking for doesn't exist.</p>
           <Link
             to="/"
-            className="mt-4 inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+            className="mt-4 inline-flex items-center px-4 py-2 bg-[#48B3AF] text-white rounded-md hover:bg-[#476EAE] transition"
           >
             Back to Home
           </Link>
@@ -150,40 +149,14 @@ const ProductDetailPage = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate(-1)}
-                className="p-2 text-gray-400 hover:text-gray-600"
-              >
-                <ArrowLeftIcon className="h-5 w-5" />
-              </button>
-              <Link to="/" className="text-2xl font-bold text-red-600">
-                Rudra Exports
-              </Link>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link to="/" className="text-gray-700 hover:text-red-600">Home</Link>
-              <Link to="/products" className="text-gray-700 hover:text-red-600">Products</Link>
-              <Link to="/contact" className="text-gray-700 hover:text-red-600">Contact</Link>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <Link to="/cart" className="text-gray-700 hover:text-red-600">Cart</Link>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#F6FF99]">
+     
 
       {/* Product Details */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Images */}
           <div className="space-y-4">
-            {/* Main Image */}
             <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="aspect-square">
                 {currentImage ? (
@@ -202,18 +175,17 @@ const ProductDetailPage = () => {
                 )}
               </div>
               
-              {/* Image Navigation */}
               {images.length > 1 && (
                 <>
                   <button
                     onClick={() => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70"
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-[#48B3AF] text-white p-3 rounded-full hover:bg-[#A7E399]"
                   >
                     <ChevronLeftIcon className="h-6 w-6" />
                   </button>
                   <button
                     onClick={() => setCurrentImageIndex((prev) => (prev + 1) % images.length)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-[#48B3AF] text-white p-3 rounded-full hover:bg-[#A7E399]"
                   >
                     <ChevronRightIcon className="h-6 w-6" />
                   </button>
@@ -221,7 +193,6 @@ const ProductDetailPage = () => {
               )}
             </div>
 
-            {/* Thumbnail Images */}
             {images.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
                 {images.map((image, index) => (
@@ -229,7 +200,7 @@ const ProductDetailPage = () => {
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
                     className={`aspect-square bg-white rounded-lg overflow-hidden border-2 ${
-                      index === currentImageIndex ? 'border-red-600' : 'border-gray-200'
+                      index === currentImageIndex ? 'border-[#48B3AF]' : 'border-gray-300'
                     }`}
                   >
                     <img
@@ -245,44 +216,42 @@ const ProductDetailPage = () => {
 
           {/* Product Information */}
           <div className="space-y-6">
-            {/* Basic Info */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-red-600 font-medium">
+                <span className="text-sm text-[#48B3AF] font-medium">
                   {product.category?.name}
                 </span>
                 <button
                   onClick={handleWishlistToggle}
-                  className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                  className="p-2 text-gray-400 hover:text-[#48B3AF] transition-colors"
                 >
                   {isWishlisted ? (
-                    <HeartIconSolid className="h-6 w-6 text-red-600" />
+                    <HeartIconSolid className="h-6 w-6 text-[#48B3AF]" />
                   ) : (
                     <HeartIcon className="h-6 w-6" />
                   )}
                 </button>
               </div>
               
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              <h1 className="text-3xl font-bold text-[#476EAE] mb-4">
                 {product.name}
               </h1>
 
-              {/* Rating */}
               {reviews.length > 0 && (
                 <div className="mb-4">
                   {renderStars(Math.round(averageRating), reviews.length)}
                 </div>
               )}
 
-              <p className="text-gray-600 text-lg leading-relaxed">
+              <p className="text-gray-700 text-lg leading-relaxed">
                 {product.description}
               </p>
             </div>
 
             {/* Price */}
-            <div className="border-t border-gray-200 pt-6">
+            <div className="border-t border-gray-300 pt-6">
               <div className="flex items-center space-x-4 mb-6">
-                <span className="text-4xl font-bold text-red-600">
+                <span className="text-4xl font-bold text-[#48B3AF]">
                   ₹{discountedPrice.toFixed(2)}
                 </span>
                 {product.discount > 0 && (
@@ -290,49 +259,21 @@ const ProductDetailPage = () => {
                     <span className="text-xl text-gray-500 line-through">
                       ₹{product.price.toFixed(2)}
                     </span>
-                    <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full font-medium">
+                    <span className="bg-[#A7E399] text-[#476EAE] px-3 py-1 rounded-full font-medium">
                       {product.discount}% OFF
                     </span>
                   </>
                 )}
               </div>
 
-              {/* Product Specifications */}
-              <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-                {product.material && (
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <span className="font-medium text-gray-900">Material:</span>
-                    <span className="text-gray-600 ml-2">{product.material}</span>
-                  </div>
-                )}
-                {product.weight && (
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <span className="font-medium text-gray-900">Weight:</span>
-                    <span className="text-gray-600 ml-2">{product.weight}kg</span>
-                  </div>
-                )}
-                {product.dimensions && (
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <span className="font-medium text-gray-900">Dimensions:</span>
-                    <span className="text-gray-600 ml-2">{product.dimensions}</span>
-                  </div>
-                )}
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <span className="font-medium text-gray-900">Stock:</span>
-                  <span className={`ml-2 ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {product.stock > 0 ? `${product.stock} available` : 'Out of stock'}
-                  </span>
-                </div>
-              </div>
-
               {/* Quantity Selector */}
               {product.stock > 0 && (
                 <div className="flex items-center space-x-4 mb-6">
-                  <span className="font-medium text-gray-900">Quantity:</span>
+                  <span className="font-medium text-[#476EAE]">Quantity:</span>
                   <div className="flex items-center border border-gray-300 rounded-lg">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-3 py-2 text-gray-600 hover:text-gray-900"
+                      className="px-3 py-2 text-[#476EAE] hover:text-[#48B3AF]"
                     >
                       -
                     </button>
@@ -341,7 +282,7 @@ const ProductDetailPage = () => {
                     </span>
                     <button
                       onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                      className="px-3 py-2 text-gray-600 hover:text-gray-900"
+                      className="px-3 py-2 text-[#476EAE] hover:text-[#48B3AF]"
                     >
                       +
                     </button>
@@ -356,14 +297,14 @@ const ProductDetailPage = () => {
                     <button
                       onClick={handleAddToCart}
                       disabled={addingToCart}
-                      className="w-full bg-red-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
+                      className="w-full bg-[#48B3AF] text-white py-4 px-6 rounded-xl font-semibold text-lg hover:bg-[#476EAE] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
                     >
                       <ShoppingCartIcon className="h-6 w-6" />
                       <span>{addingToCart ? 'Adding...' : 'Add to Cart'}</span>
                     </button>
                     <button
                       onClick={handleBuyNow}
-                      className="w-full bg-gray-900 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors flex items-center justify-center space-x-2"
+                      className="w-full bg-[#476EAE] text-white py-4 px-6 rounded-xl font-semibold text-lg hover:bg-[#48B3AF] transition-colors flex items-center justify-center space-x-2"
                     >
                       <CreditCardIcon className="h-6 w-6" />
                       <span>Buy Now</span>
@@ -381,17 +322,17 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Additional Info */}
-            <div className="border-t border-gray-200 pt-6">
+            <div className="border-t border-gray-300 pt-6">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                <div className="flex items-center space-x-2 text-gray-600">
+                <div className="flex items-center space-x-2 text-[#476EAE]">
                   <TruckIcon className="h-5 w-5" />
                   <span>Free Delivery</span>
                 </div>
-                <div className="flex items-center space-x-2 text-gray-600">
+                <div className="flex items-center space-x-2 text-[#476EAE]">
                   <ShieldCheckIcon className="h-5 w-5" />
                   <span>Quality Guaranteed</span>
                 </div>
-                <div className="flex items-center space-x-2 text-gray-600">
+                <div className="flex items-center space-x-2 text-[#476EAE]">
                   <ShareIcon className="h-5 w-5" />
                   <span>Share Product</span>
                 </div>
@@ -404,16 +345,16 @@ const ProductDetailPage = () => {
         {reviews.length > 0 && (
           <div className="mt-16">
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Customer Reviews</h2>
+              <h2 className="text-2xl font-bold text-[#476EAE] mb-6">Customer Reviews</h2>
               <div className="space-y-6">
                 {reviews.slice(0, 5).map((review) => (
                   <div key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-medium text-gray-900">{review.user?.name || 'Anonymous'}</span>
+                          <span className="font-medium text-[#476EAE]">{review.user?.name || 'Anonymous'}</span>
                           {review.isVerified && (
-                            <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs">
+                            <span className="bg-[#A7E399] text-[#476EAE] px-2 py-0.5 rounded-full text-xs">
                               Verified Purchase
                             </span>
                           )}
@@ -437,7 +378,7 @@ const ProductDetailPage = () => {
         {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">You Might Also Like</h2>
+            <h2 className="text-2xl font-bold text-[#476EAE] mb-8">You Might Also Like</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.slice(0, 4).map((relatedProduct) => (
                 <div
@@ -459,11 +400,11 @@ const ProductDetailPage = () => {
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
+                    <h3 className="font-semibold text-[#476EAE] mb-2 line-clamp-2 group-hover:text-[#48B3AF] transition-colors">
                       {relatedProduct.name}
                     </h3>
                     <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-red-600">
+                      <span className="text-lg font-bold text-[#48B3AF]">
                         ₹{(relatedProduct.price * (1 - relatedProduct.discount / 100)).toFixed(2)}
                       </span>
                       {relatedProduct.discount > 0 && (

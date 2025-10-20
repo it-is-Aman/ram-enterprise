@@ -1,43 +1,49 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // Admin Components
-import AdminLayout from './pages/admin/AdminLayout';
-import Dashboard from './pages/admin/Dashboard';
-import AdminProductsPage from './pages/admin/ProductsPage';
-import AddProductPage from './pages/admin/AddProductPage';
-import EditProductPage from './pages/admin/EditProductPage';
-import AdminProductDetailsPage from './pages/admin/ProductDetailsPage';
-import OrdersPage from './pages/admin/OrdersPage';
-import OrderDetailsPage from './pages/admin/OrderDetailsPage';
-import CustomersPage from './pages/admin/CustomersPage';
-import CustomerDetailsPage from './pages/admin/CustomerDetailsPage';
-import InquiriesPage from './pages/admin/InquiriesPage';
-import InquiryDetailsPage from './pages/admin/InquiryDetailsPage';
-import ReviewsPage from './pages/admin/ReviewsPage';
-import ReviewDetailsPage from './pages/admin/ReviewDetailsPage';
+import AdminLayout from "./pages/admin/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import AdminProductsPage from "./pages/admin/ProductsPage";
+import AddProductPage from "./pages/admin/AddProductPage";
+import EditProductPage from "./pages/admin/EditProductPage";
+import AdminProductDetailsPage from "./pages/admin/ProductDetailsPage";
+import OrdersPage from "./pages/admin/OrdersPage";
+import OrderDetailsPage from "./pages/admin/OrderDetailsPage";
+import CustomersPage from "./pages/admin/CustomersPage";
+import CustomerDetailsPage from "./pages/admin/CustomerDetailsPage";
+import InquiriesPage from "./pages/admin/InquiriesPage";
+import InquiryDetailsPage from "./pages/admin/InquiryDetailsPage";
+import ReviewsPage from "./pages/admin/ReviewsPage";
+import ReviewDetailsPage from "./pages/admin/ReviewDetailsPage";
 
 // User Components
-import HomePage from './pages/user/HomePage';
-import ProductsPage from './pages/user/ProductsPage';
-import ProductDetailPage from './pages/user/ProductDetailPage';
-import CartPage from './pages/user/CartPage';
-import CheckoutPage from './pages/user/CheckoutPage';
-import OrderSuccessPage from './pages/user/OrderSuccessPage';
-import ContactPage from './pages/user/ContactPage';
+import HomePage from "./pages/user/HomePage";
+import ProductsPage from "./pages/user/ProductsPage";
+import ProductDetailPage from "./pages/user/ProductDetailPage";
+import CartPage from "./pages/user/CartPage";
+import CheckoutPage from "./pages/user/CheckoutPage";
+import OrderSuccessPage from "./pages/user/OrderSuccessPage";
+import ContactPage from "./pages/user/ContactPage";
+import Maindashboard from "./pages/Maindashboard";
+import { CompanyInfo } from "./components/user";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* User-Facing Routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/product/:id" element={<ProductDetailPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/order-success" element={<OrderSuccessPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        
+
+        <Route path="/" element={<Maindashboard />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/aboutus" element={<CompanyInfo />} />
+          <Route path="/product/:id" element={<ProductDetailPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-success" element={<OrderSuccessPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+        </Route>
+
         {/* Admin Pages */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
@@ -55,7 +61,7 @@ function App() {
           <Route path="reviews" element={<ReviewsPage />} />
           <Route path="reviews/:id" element={<ReviewDetailsPage />} />
         </Route>
-        
+
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
