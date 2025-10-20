@@ -1,5 +1,17 @@
 import api from './api';
 
+// Authentication APIs
+export const authAPI = {
+  login: (email, password) => api.post('/auth/login', { email, password }),
+  register: (userData) => api.post('/auth/register', userData),
+  logout: () => api.post('/auth/logout'),
+  getProfile: () => api.get('/auth/profile'),
+  updateProfile: (data) => api.put('/auth/profile', data),
+  changePassword: (currentPassword, newPassword) => 
+    api.post('/auth/change-password', { currentPassword, newPassword }),
+  verifyToken: () => api.get('/auth/verify'),
+};
+
 // Dashboard APIs
 export const dashboardAPI = {
   getStats: () => api.get('/dashboard/stats'),

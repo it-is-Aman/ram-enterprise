@@ -7,15 +7,18 @@ import {
   deleteUser,
   getUserStats
 } from '../controllers/userController.js';
+import { authenticateToken, isAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// Admin-only routes
+router.get('/', authenticateToken, isAdmin, getUsers);
+router.get('/stats', authenticateToken, isAdmin, getUserStats);
+router.delete('/:id', authenticateToken, isAdmin, deleteUser);
+
 // User routes
-router.get('/', getUsers); // Admin only
-router.get('/stats', getUserStats); // Admin only
-router.get('/:id', getUser);
-router.post('/', createUser); // For testing - will be replaced with auth
-router.put('/:id', updateUser);
-router.delete('/:id', deleteUser); // Admin only
+router.get('/:id', authenticateToken, getUser);
+router.post('/', createUser); // For testing/admin creation
+router.put('/:id', authenticateToken, updateUser);
 
 export default router;

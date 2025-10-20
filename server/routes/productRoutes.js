@@ -12,14 +12,14 @@ import {
 const router = express.Router();
 
 // Public routes
-router.get('/', getProducts);
-router.get('/featured', getFeaturedProducts);
-router.get('/:id', getProduct);
+router.get('/',authenticateToken,  getProducts);
+router.get('/featured',authenticateToken,  getFeaturedProducts);
+router.get('/:id',authenticateToken,  getProduct);
 
-// Admin routes (will add auth middleware later)
-router.post('/', createProduct);
-router.put('/:id', updateProduct);
-router.patch('/:id/stock', updateStock);
-router.delete('/:id', deleteProduct);
+// Admin routes
+router.post('/',authenticateToken,  isAdmin, createProduct);
+router.put('/:id',authenticateToken,  isAdmin, updateProduct);
+router.patch('/:id/stock',authenticateToken,  isAdmin, updateStock);
+router.delete('/:id',authenticateToken,  isAdmin, deleteProduct);
 
 export default router;
